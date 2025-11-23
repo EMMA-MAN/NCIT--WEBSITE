@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EmmaMan — Learner & Teacher Hub</title>
+<meta name="description" content="EmmaMan: Uganda New Curriculum learning app — free PDFs, videos, AI assistant, sellers area." />
+<style>
+:root{
+  --bg:#f6f9fc; --card:#ffffff; --muted:#9aa7b2;
+  --accent:#0b6fc3; --accent-2:#7bc0ff; --accent-3:#ff8a65;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#102028;background:var(--bg)}
+.app{max-width:1200px;margin:18px auto;padding:16px;display:grid;grid-template-columns:220px 1fr;gap:18px}
+header.topbar{grid-column:1 / span 2;display:flex;align-items:center;gap:14px;padding:12px 18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:12px;color:#fff;position:sticky;top:0;z-index:99}
+.logo{font-weight:800;font-size:20px;letter-spacing:.3px}
+.search{margin-left:auto;display:flex;gap:8px}
+.search input{padding:8px 12px;border-radius:10px;border:0;min-width:260px}
+.search button{background:#fff;color:var(--accent);border:0;padding:8px 12px;border-radius:10px;cursor:pointer;transition:.3s}
+.search button:hover{background:#eef3f6}
+nav.left{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 20px rgba(12,22,32,0.06);height:calc(100vh - 120px);position:sticky;top:20px;align-self:start;overflow:auto}
+nav.left h4{margin:6px 0 12px 0}
+nav.left a{display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;color:#15323f;text-decoration:none;margin-bottom:8px;transition:.3s}
+nav.left a:hover{background:linear-gradient(90deg,#f1f8ff,#fff)}
+.badge{font-size:12px;background:var(--accent-2);padding:4px 8px;border-radius:999px;color:#023b6b;margin-left:auto}
+main.content{padding:12px}
+.subject-bar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.subject-tab{background:var(--card);padding:10px 14px;border-radius:999px;box-shadow:0 6px 18px rgba(12,22,32,0.04);cursor:pointer;border:1px solid transparent;transition:.3s}
+.subject-tab.active{background:linear-gradient(90deg,#e6f3ff,#fff);border-color:var(--accent-2);transform:translateY(-2px)}
+.classes-row{display:flex;gap:8px;overflow:auto;padding:8px 6px;margin-bottom:12px}
+.class-pill{padding:8px 12px;border-radius:999px;background:#fff;border:1px solid #eef3f6;cursor:pointer;transition:.3s}
+.class-pill:hover{background:linear-gradient(90deg,#f1f8ff,#fff)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 10px 30px rgba(12,22,32,0.04);transition:.3s}
+.card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(12,22,32,0.08)}
+.thumb{height:140px;border-radius:8px;background:linear-gradient(180deg,#f0f6ff,#fff);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:800;position:relative}
+.pid{position:absolute;left:10px;top:8px;background:rgba(11,111,195,0.08);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--accent)}
+.card h4{margin:10px 0 4px 0}
+.meta{color:var(--muted);font-size:13px}
+.card .actions{display:flex;gap:8px;margin-top:10px}
+.btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;transition:.3s}
+.btn:hover{background:var(--accent-2)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(11,111,195,0.12)}
+.ai-float{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:12px 18px;border-radius:999px;box-shadow:0 12px 30px rgba(11,111,195,0.18);cursor:pointer;font-weight:700;transition:.3s}
+.ai-float:hover{transform:translateX(-50%) scale(1.05)}
+.modal-back{position:fixed;inset:0;background:rgba(3,6,12,0.45);display:flex;align-items:center;justify-content:center;z-index:99}
+.modal{background:var(--card);padding:18px;border-radius:12px;max-width:720px;width:100%;transition:.3s}
+.modal input, .modal select, .modal textarea{width:100%;padding:8px;margin:6px 0;border-radius:8px;border:1px solid #eef3f6}
+.about{background:linear-gradient(180deg,#fff,#f9fbff);padding:18px;border-radius:12px}
+@media(max-width:900px){.app{grid-template-columns:1fr;}.search input{min-width:120px}.left{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="logo">EmmaMan</div>
+    <div style="font-size:13px;opacity:.95">Learner & Teacher Hub — Uganda New Curriculum</div>
+    <div class="search">
+      <input id="searchInput" placeholder="Search by title, product ID, subject..." />
+      <button onclick="doSearch()">Search</button>
+    </div>
+  </header>
+
+  <nav class="left">
+    <h4>E‑Commerce</h4>
+    <a href="#videos" onclick="showSection('videos')">🎥 Videos <span class="badge">Free</span></a>
+    <a href="#pdfs" onclick="showSection('pdfs')">📄 PDFs (Free download)</a>
+    <a href="#uploader" onclick="openUploader()">⬆️ Upload Content</a>
+    <a href="#signup" onclick="openSignup()">📝 Seller Sign-up</a>
+    <hr style="margin:12px 0;opacity:.08" />
+    <h4>Quick Links</h4>
+    <a href="#about" onclick="showSection('about')">ℹ️ About</a>
+    <a href="#contact" onclick="showSection('contact')">☎️ Contact</a>
+  </nav>
+
+  <main class="content">
+    <div class="subject-bar" id="subjectBar"></div>
+    <div class="classes-row" id="classesRow"></div>
+    <div class="grid" id="itemsGrid"></div>
+    <div id="sectionArea" style="margin-top:14px"></div>
+  </main>
+</div>
+
+<!-- AI Button -->
+<div class="ai-float" id="aiButton">EMMA</div>
+
+<!-- AI Chat Modal -->
+<div id="aiModal" class="modal-back" style="display:none">
+  <div class="modal">
+    <h3>EMMA — Smart Study Assistant</h3>
+    <div id="aiChat" style="height:220px;overflow-y:auto;border:1px solid #eef3f6;padding:8px;border-radius:8px;background:#f9f9f9;margin-bottom:10px"></div>
+    <input type="text" id="aiInput" placeholder="Type your question..." />
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn" onclick="sendAIText()">Send</button>
+      <button class="btn ghost" onclick="openAIUpload()">📎 Upload File</button>
+      <button class="btn ghost" onclick="startSpeech()">🎤 Speak</button>
+      <button class="btn ghost" onclick="closeAI()">Close</button>
+    </div>
+    <input type="file" id="aiFileInput" style="display:none" accept=".pdf,image/*,video/*"/>
+  </div>
+</div>
+
+<!-- Uploader Modal -->
+<div id="uploaderModal" class="modal-back" style="display:none">
+  <div class="modal">
+    <h3>Upload Content</h3>
+    <input type="file" id="uploadFile" accept=".pdf,image/*,video/*" multiple />
+    <input type="text" id="youtubeLink" placeholder="Paste YouTube link (optional)" />
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+      <select id="uploadSubject"><option>Select Subject</option></select>
+      <select id="uploadClass"><option>S1</option><option>S2</option><option>S3</option><option>S4</option><option>S5</option><option>S6</option></select>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn" onclick="submitUploader()">Submit</button>
+      <button class="btn ghost" onclick="closeUploader()">Cancel</button>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">Note: This demo stores files only in the browser. For real uploads, server or cloud storage (Firebase / Supabase / AWS) is required.</p>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal-back" style="display:none">
+  <div class="modal">
+    <h3>Seller Sign-up</h3>
+    <input id="sellerName" placeholder="Full name" />
+    <input id="sellerEmail" placeholder="Email" />
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn" onclick="registerSeller()">Register</button>
+      <button class="btn ghost" onclick="closeSignup()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Modal (hidden unless password typed into EMMA) -->
+<div id="adminModal" class="modal-back" style="display:none">
+  <div class="modal">
+    <h3>Admin Panel</h3>
+    <p class="meta">Welcome, Admin. (Demo only — secure this server-side)</p>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <div style="flex:1"><strong>Registered users</strong><div id="statUsers">0</div></div>
+      <div style="flex:1"><strong>Weekly traffic</strong><div id="statTraffic">0</div></div>
+      <div style="flex:1"><strong>Feedbacks</strong><div id="statFeedbacks">0</div></div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn" onclick="closeAdmin()">Close</button>
+      <button class="btn ghost" onclick="exportLogs()">Export Logs</button>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">Security note: This client-side password check is only for demo. For real protection, implement server-side authentication with hashed passwords and HTTPS.</p>
+  </div>
+</div>
+
+<script>
+// ---------- Data and UI rendering ----------
+const SUBJECTS = ['Physics','Math','Chemistry','Geography','History','Biology','Art','Kiswahili','Agriculture','ICT','Entrepreneurship','CRE','IRE','English'];
+const CLASSES = ['S1','S2','S3','S4','S5','S6'];
+
+const SECRET_ADMIN_TRIGGER = 'emmanueldollar566$'; // Provided by you — do NOT keep secrets in client-side code in production
+const OWNER_EMAIL = 'emmanuelladu.gmail.com'; // You provided this string; consider correcting to a valid address like 'emmanuelladu@gmail.com'
+
+// --- Render Subjects ---
+const subjectBar = document.getElementById('subjectBar');
+SUBJECTS.forEach((s,i)=>{
+  const b=document.createElement('button'); b.className='subject-tab'+(i===0?' active':''); b.innerText=s; b.onclick=()=>selectSubject(s,b);
+  subjectBar.appendChild(b);
+});
+
+// --- Select Subject ---
+function selectSubject(subject, btn){
+  document.querySelectorAll('.subject-tab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active'); renderClasses(); loadItems(subject,'All');
+}
+
+// --- Render Classes ---
+function renderClasses(){
+  const row=document.getElementById('classesRow'); row.innerHTML='';
+  CLASSES.forEach(c=>{
+    const p=document.createElement('div'); p.className='class-pill'; p.innerText=c; p.onclick=()=>loadItems(getActiveSubject(),c);
+    row.appendChild(p);
+  });
+}
+
+function getActiveSubject(){ return document.querySelector('.subject-tab.active').innerText; }
+
+// --- Load Items (demo) ---
+function loadItems(subject,cls){
+  const grid=document.getElementById('itemsGrid'); grid.innerHTML='';
+  for(let i=1;i<=6;i++){
+    const card=document.createElement('div'); card.className='card';
+    const pid=`EM-${new Date().getFullYear()}-${subject.slice(0,3).toUpperCase()}-${String(i).padStart(5,'0')}`;
+    card.innerHTML=`<div class="thumb">${subject.slice(0,3).toUpperCase()}<div class="pid">${pid}</div></div>
+      <h4>${subject} Sample ${i}</h4>
+      <div class="meta">${cls} • PDF • Free download</div>
+      <div class="actions"><button class="btn" onclick="downloadPdf('${subject}','Sample ${i}.pdf')">Download PDF</button><button class="btn ghost" onclick="openPreview('${pid}')">Preview</button></div>`;
+    grid.appendChild(card);
+  }
+}
+
+renderClasses(); loadItems(SUBJECTS[0],'All');
+
+// --- Search ---
+function doSearch(){ const q=document.getElementById('searchInput').value.trim(); alert('Search: '+q+' (demo)'); }
+
+// --- Sections ---
+function showSection(name){
+  const area=document.getElementById('sectionArea'); area.innerHTML='';
+  if(name==='about'){
+    area.innerHTML=`<div class="about"><h2>About EmmaMan</h2>
+      <p>This app was built to avail learners and teachers with easy access to different PDF notes, books, videos, and study materials following the Uganda New Curriculum.</p>
+      <p>It was lovingly created by <strong>EMMA MAN</strong> and his brother to support students across Uganda. For support or inquiries, contact us on WhatsApp: <strong>0779471134 / 0704086675</strong></p>
+      <h4>Features</h4>
+      <ul>
+        <li>Free PDF downloads for learners</li>
+        <li>Video lessons and tutorials (stream or upload)</li>
+        <li>Smart AI assistant (EMMA) that answers scenario-based questions using the NCDC approach: Problem → Introduction → Points → Application → Conclusion</li>
+        <li>Automatic subject & class classification for uploads</li>
+        <li>Seller sign-up with 6 months free trial; subscription applies after trial</li>
+      </ul>
+      <p>We aim to make learning fast, simple, and joyful. Thank you for choosing EmmaMan — the app built for learners.</p>
+    </div>`;
+  }
+  else if(name==='videos'){
+    area.innerHTML=`<div class="card" style="padding:14px"><h3>Video Library</h3><p class="meta">Stream or download video lessons. Use the Upload Content button to add MP4/WEBM files or paste YouTube links.</p></div>`;
+  }
+  else if(name==='pdfs'){ area.innerHTML=`<div class="card" style="padding:14px"><h3>PDF Library</h3><p class="meta">Free PDF downloads available.</p></div>`; }
+  else if(name==='contact'){ area.innerHTML=`<div class="card" style="padding:14px"><h3>Contact</h3><p>WhatsApp: <strong>0779471134 / 0704086675</strong></p></div>`; }
+}
+
+// --- Uploader ---
+function openUploader(){
+  document.getElementById('uploaderModal').style.display='flex';
+  const subj=document.getElementById('uploadSubject'); subj.innerHTML=''; SUBJECTS.forEach(s=>{ const o=document.createElement('option'); o.innerText=s; subj.appendChild(o); });
+  document.getElementById('uploadClass').value='S1';
+}
+function closeUploader(){ document.getElementById('uploaderModal').style.display='none'; }
+function submitUploader(){
+  const files = document.getElementById('uploadFile').files;
+  const yt = document.getElementById('youtubeLink').value.trim();
+  const subject = document.getElementById('uploadSubject').value;
+  const cls = document.getElementById('uploadClass').value;
+  if(files.length===0 && !yt){ alert('Select a file or paste a YouTube link'); return; }
+  // DEMO: store metadata in localStorage. Replace with server/cloud storage in production.
+  const uploads = JSON.parse(localStorage.getItem('emma_uploads'||'[]')) || [];
+  uploads.push({id:Date.now(),subject,cls,files:files.length,yt,ts:new Date().toISOString()});
+  localStorage.setItem('emma_uploads',JSON.stringify(uploads));
+  alert('Content submitted successfully! (demo — saved locally)'); closeUploader();
+}
+
+// --- Signup ---
+function openSignup(){ document.getElementById('signupModal').style.display='flex'; }
+function closeSignup(){ document.getElementById('signupModal').style.display='none'; }
+function registerSeller(){
+  const n=document.getElementById('sellerName').value; const e=document.getElementById('sellerEmail').value;
+  if(!n||!e){ alert('Enter name and email'); return; }
+  // DEMO: save seller to localStorage. Replace with backend API to persist sellers and send emails.
+  const sellers = JSON.parse(localStorage.getItem('emma_sellers')||'[]');
+  sellers.push({id:Date.now(),name:n,email:e,ts:new Date().toISOString()});
+  localStorage.setItem('emma_sellers',JSON.stringify(sellers));
+  alert(`Thanks ${n} — you've been registered. Free for 6 months.`); closeSignup();
+}
+
+// --- Download / Preview ---
+function downloadPdf(subject,filename){
+  const blob=new Blob([`Sample PDF for ${subject} — ${filename}`],{type:'application/pdf'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function openPreview(pid){ alert('Previewing '+pid+' (demo)'); }
+
+// --- Orders & Email (client-side demo using mailto) ---
+function placeOrder(productId, buyerEmail, buyerPhone){
+  const subject = encodeURIComponent('Order placed — '+productId);
+  const body = encodeURIComponent(`Order for ${productId}\nBuyer email: ${buyerEmail}\nBuyer phone: ${buyerPhone}\nTime: ${new Date().toISOString()}`);
+  // Send email to seller and owner's email (client-side mailto). Not reliable for production. Use server SMTP.
+  const sellerEmail = 'seller@example.com'; // replace with real seller email from product metadata
+  const to = encodeURIComponent(sellerEmail + ',' + OWNER_EMAIL);
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+
+// --- AI Chat & file upload ---
+const aiBtn=document.getElementById('aiButton');
+const aiModal=document.getElementById('aiModal');
+const aiChat=document.getElementById('aiChat');
+const aiInput=document.getElementById('aiInput');
+const aiFileInput=document.getElementById('aiFileInput');
+
+aiBtn.addEventListener('click',()=>{ aiModal.style.display='flex'; });
+function closeAI(){ aiModal.style.display='none'; aiInput.value=''; aiChat.innerHTML=''; }
+
+function sendAIText(){
+  const text=aiInput.value.trim(); if(!text) return;
+  // secret trigger check: if the exact secret is typed, open admin (DEMO only)
+  if(text === SECRET_ADMIN_TRIGGER){ aiChat.innerHTML += `<div><strong>You:</strong> ••••••••••</div>`; aiInput.value=''; openAdmin(); return; }
+
+  aiChat.innerHTML+=`<div><strong>You:</strong> ${escapeHtml(text)}</div>`;
+  aiInput.value=''; aiChat.scrollTop=aiChat.scrollHeight;
+  // DEMO response: use a simple canned NCDC-style template
+  setTimeout(()=>{
+    const resp = `Problem → Short intro → 3 points → Application → Conclusion\n\n[Demo answer to: ${escapeHtml(text)}]`;
+    aiChat.innerHTML+=`<div><strong>EMMA:</strong> <pre style="white-space:pre-wrap">${escapeHtml(resp)}</pre></div>`;
+    aiChat.scrollTop=aiChat.scrollHeight;
+  },500);
+}
+
+// --- AI File Upload ---
+function openAIUpload(){ aiFileInput.click(); }
+aiFileInput.addEventListener('change',()=>{
+  const file=aiFileInput.files[0]; if(file){
+    aiChat.innerHTML+=`<div><strong>You uploaded:</strong> ${file.name}</div>`;
+    setTimeout(()=>{ aiChat.innerHTML+=`<div><strong>EMMA:</strong> File received and ready for processing (demo)</div>`; aiChat.scrollTop=aiChat.scrollHeight; },500);
+  }
+});
+
+// --- AI Speech ---
+function startSpeech(){
+  if(!('webkitSpeechRecognition' in window)){ alert('Speech recognition not supported'); return; }
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.start();
+  recognition.onresult = function(event){
+    const transcript = event.results[0][0].transcript;
+    aiInput.value = transcript;
+    sendAIText();
+  };
+}
+
+// --- Admin (demo) ---
+function openAdmin(){
+  // populate demo stats from localStorage
+  const sellers = JSON.parse(localStorage.getItem('emma_sellers')||'[]');
+  const uploads = JSON.parse(localStorage.getItem('emma_uploads')||'[]');
+  document.getElementById('statUsers').innerText = sellers.length;
+  document.getElementById('statTraffic').innerText = Math.max(0, uploads.length * 7); // dummy
+  document.getElementById('statFeedbacks').innerText = JSON.parse(localStorage.getItem('emma_feedbacks')||'[]').length;
+  document.getElementById('adminModal').style.display='flex';
+}
+function closeAdmin(){ document.getElementById('adminModal').style.display='none'; }
+function exportLogs(){ const logs = {sellers:JSON.parse(localStorage.getItem('emma_sellers')||'[]'),uploads:JSON.parse(localStorage.getItem('emma_uploads')||'[]')}; const blob=new Blob([JSON.stringify(logs,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='emma_logs.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+
+// --- Small helpers ---
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+// Allow Ctrl+M to open EMMA quickly (same as before)
+window.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.key==='m'){ aiBtn.click(); } });
+
+// show default section
+showSection('about');
+
+</script>
+</body>
+</html>
